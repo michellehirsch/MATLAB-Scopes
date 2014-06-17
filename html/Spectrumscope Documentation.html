@@ -1,0 +1,189 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>SPECTRUMSCOPE Compute and display a real-time FFT</title>
+      <meta name="generator" content="MATLAB 7.0.0.14113 (R14) Prerelease">
+      <meta name="date" content="2004-04-07">
+      <meta name="m-file" content="spectrumscope_documentation">
+      <meta name="title" content="SPECTRUMSCOPE Compute and display a real-time FFT">
+      <meta name="description" content="SPECTRUMSCOPE makes it fairly easy to include a spectrum scope in your real-time data acquisition and analysis application.  You feed spectrumscope your data, and it plots the FFT - simple enough!  It takes 2 steps to use SPECTRUMSCOPE.  First, you initialize the scope with basic information needed for the FFT (sample rate, fft length, and number of traces). After that, all you need to do is pass your data to the scope.This documentation starts with the simplest syntax for the two steps, then provides a few more advanced options."><style>
+body {
+  background-color: white;
+}
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+pre.codeinput {
+  margin-left: 30px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.showbuttons {
+  margin-left: 30px;
+  border: solid black 2px;
+  padding: 4px;
+  background: #EBEFF3;
+}
+
+pre.codeoutput {
+  color: gray;
+  font-style: italic;
+}
+pre.error {
+  color: red;
+}
+    </style></head>
+   <body>
+      <h1>SPECTRUMSCOPE Compute and display a real-time FFT</h1>
+      <p>SPECTRUMSCOPE makes it fairly easy to include a spectrum scope in your real-time data acquisition and analysis application.
+         You feed spectrumscope your data, and it plots the FFT - simple enough!  It takes 2 steps to use SPECTRUMSCOPE.  First, you
+         initialize the scope with basic information needed for the FFT (sample rate, fft length, and number of traces). After that,
+         all you need to do is pass your data to the scope.
+      </p>
+      <p>This documentation starts with the simplest syntax for the two steps, then provides a few more advanced options.</p>
+      <h2>Contents</h2>
+      <ul>
+         <li><a href="#1">Step 1: Initialize the scope</a></li>
+         <li><a href="#2">Step 2: Update the scope</a></li>
+         <li><a href="#3">Including multiple traces</a></li>
+         <li><a href="#4">Specifying the axes to locate the scope</a></li>
+         <li><a href="#5">Returning a handle to the scope</a></li>
+         <li><a href="#6">Example</a></li>
+      </ul>
+      <h2>Step 1: Initialize the scope<a name="1"></a></h2>
+      <p>SPECTRUMSCOPE(FS,NFFT) initializes a spectrum scope in the current axes. This spectrum scope will compute and displays the
+         NFFT-point FFT of a vector signal with sample rate FS Hz.
+      </p>
+      <h2>Step 2: Update the scope<a name="2"></a></h2>
+      <p>SPECTRUMSCOPE(S) updates the spectrum scope in the current axes with the FFT of vector S.  The scope should first be initialized
+         as above with sample rate and FFT length.  If not, the sample rate will be 1 Hz and the FFT length will be the length of S.
+          Differences between the length of S and the specified FFT length are handled the same as MATLAB's built-in FFT function (i.e.,
+         zero-padding or truncation, as appropriate).
+      </p>
+      <h2>Including multiple traces<a name="3"></a></h2>
+      <p>SPECTRUMSCOPE(FS,NFFT,NTRACES) initializes a spectrum scope in the current axes with NTRACES traces.  A trace is a single
+         line on the scope; typically one will display one trace per channel of data.  The default for NTRACES is 1. To update a spectrum
+         scope with multiple traces, SPECTRUMSCOPE(S) must specify a matrix S with shorter dimension length = NTRACES.  SPECTRUMSCOPE
+         computes the FFT along the longer dimension, assuming the shorter dimension corresponds to traces.  I know that this differs
+         from FFT (which always defaults to applying to each column), but I find this deviation convenient.
+      </p>
+      <h2>Specifying the axes to locate the scope<a name="4"></a></h2>
+      <p>SPECTRUMSCOPE(HAX, ...) defines the scope in specified axes HAX instead of GCA.  i.e., SPECTRUMSCOPE(HAX,FS,NFFT) initializes
+         axes HAX as a spectrum scope, and SPECTRUMSCOPE(HAX,S) updates axes HAX with vector S.
+      </p>
+      <h2>Returning a handle to the scope<a name="5"></a></h2>
+      <p>HAX = SPECTRUMSCOPE(...) returns a handle to the axes initialized by the spectrum scope.  This is useful if you allow SPECTRUMSCOPE
+         to create an axes for you, and want to be able to easily reference the axes for updates.  The lines created by SPECTRUMSCOPE
+         all have the tag 'SpectrumScope'.  If you would like to manually modify the properties of these lines, their handles can be
+         found by:
+      </p><pre>      HAX = SPECTRUMSCOPE(...);
+      HLINE = findobj(HAX,'Tag','SpectrumScope');</pre><h2>Example<a name="6"></a></h2>
+      <p>Create data</p><pre class="codeinput">Fs = 1024;
+Nfft = 2048;
+t = (0:1:Nfft-1)'/Fs;
+fo = 100:5:300;         <span class="comment">% Range of fundamental frequencies</span>
+s1 = sin(2*pi*t*fo);
+</pre><p>Initialize scope</p><pre class="codeinput">spectrumscope(Fs,Nfft);
+</pre><img vspace="5" hspace="5" src="spectrumscope_documentation_01.png"><p>Update scope</p><pre class="codeinput"><span class="keyword">for</span> ii = 1:length(fo)
+    spectrumscope(s1(:,ii));
+    drawnow;pause(.01);
+<span class="keyword">end</span>;
+</pre><img vspace="5" hspace="5" src="spectrumscope_documentation_02.png"><p class="footer"><br></p>
+      <!--
+##### SOURCE BEGIN #####
+%% SPECTRUMSCOPE Compute and display a real-time FFT
+% SPECTRUMSCOPE makes it fairly easy to include a spectrum scope in your
+% real-time data acquisition and analysis application.  You feed
+% spectrumscope your data, and it plots the FFT - simple enough!  It takes
+% 2 steps to use SPECTRUMSCOPE.  First, you initialize the scope with basic
+% information needed for the FFT (sample rate, fft length, and number of traces).
+% After that, all you need to do is pass your data to the scope.
+%
+% This documentation starts with the simplest syntax for the two steps,
+% then provides a few more advanced options.
+
+%% Step 1: Initialize the scope
+% SPECTRUMSCOPE(FS,NFFT) initializes a spectrum scope in the current axes.
+% This spectrum scope will compute and displays the NFFT-point FFT of a vector 
+% signal with sample rate FS Hz.
+
+%% Step 2: Update the scope
+% SPECTRUMSCOPE(S) updates the spectrum scope in the current axes with the
+% FFT of vector S.  The scope should first be initialized as above with
+% sample rate and FFT length.  If not, the sample rate will be 1 Hz and the FFT
+% length will be the length of S.  Differences between the length of S and
+% the specified FFT length are handled the same as MATLAB's built-in FFT
+% function (i.e., zero-padding or truncation, as appropriate).
+
+%% Including multiple traces
+% SPECTRUMSCOPE(FS,NFFT,NTRACES) initializes a spectrum scope in the
+% current axes with NTRACES traces.  A trace is a single line on the scope;
+% typically one will display one trace per channel of data.  The default
+% for NTRACES is 1. To update a spectrum scope with multiple traces,
+% SPECTRUMSCOPE(S) must specify a matrix S with shorter dimension length =
+% NTRACES.  SPECTRUMSCOPE computes the FFT along the longer dimension,
+% assuming the shorter dimension corresponds to traces.  I know that this
+% differs from FFT (which always defaults to applying to each column), but
+% I find this deviation convenient.
+
+%% Specifying the axes to locate the scope
+% SPECTRUMSCOPE(HAX, ...) defines the scope in specified axes HAX instead of GCA.  i.e.,
+% SPECTRUMSCOPE(HAX,FS,NFFT) initializes axes HAX as a spectrum scope, and
+% SPECTRUMSCOPE(HAX,S) updates axes HAX with vector S.
+
+%% Returning a handle to the scope
+% HAX = SPECTRUMSCOPE(...) returns a handle to the axes initialized by the
+% spectrum scope.  This is useful if you allow SPECTRUMSCOPE to create an
+% axes for you, and want to be able to easily reference the axes for
+% updates.  The lines created by SPECTRUMSCOPE all have the tag
+% 'SpectrumScope'.  If you would like to manually modify the properties of
+% these lines, their handles can be found by:
+%
+%        HAX = SPECTRUMSCOPE(...);
+%        HLINE = findobj(HAX,'Tag','SpectrumScope');
+
+%% Example
+% Create data
+Fs = 1024;
+Nfft = 2048;
+t = (0:1:Nfft-1)'/Fs;
+fo = 100:5:300;         % Range of fundamental frequencies
+s1 = sin(2*pi*t*fo);
+
+%%
+% Initialize scope
+spectrumscope(Fs,Nfft);
+
+%%
+% Update scope
+for ii = 1:length(fo)
+    spectrumscope(s1(:,ii));
+    drawnow;pause(.01);
+end;
+##### SOURCE END #####
+-->
+   </body>
+</html>
