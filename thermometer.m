@@ -1,5 +1,5 @@
 function varargout = thermometer(hAx,Trange,Tinit);
-% THERMOMETER      Create a graphical thermometer display
+% THERMOMETER      Create a graphical thermometer display 
 %
 % THERMOMETER makes it easy to include a thermometer display in your
 % real-time data acquisition and analysis application.  It takes
