@@ -197,19 +197,19 @@ hFig = get(parms.hAxes,'Parent');
 % figure
 if ~strcmp(get(hFig,'Type'),'figure')
     hFig = get(hFig,'Parent');
-end;
+end
 
 %%
 % Label the plot.
 % There's a bug in R13 when creating xlabel and ylabel with direct
 % parenting - the alignment gets all messed up. Instead, make hAx current
 % axes
-ca = gca;
-set(hFig,'CurrentAxes',parms.hAxes);
-xlabel('History')
-ylabel('Frequency (Hz)');
-zlabel('Magnitude (dB)');
-set(hFig,'CurrentAxes',ca);
+ax = parms.hAxes;
+% set(hFig,'CurrentAxes',parms.hAxes);
+xlabel(ax,'History')
+ylabel(ax,'Frequency (Hz)');
+zlabel(ax,'Magnitude (dB)');
+% set(hFig,'CurrentAxes',ca);
 view([103 30])
 
 %%

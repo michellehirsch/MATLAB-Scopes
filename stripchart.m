@@ -234,13 +234,9 @@ set(parms.hAxes,'XTickLabel',[],'XTickMode','Manual','XGrid','On','YGrid','On')
 % There's a bug in R13 when creating xlabel and ylabel with direct
 % parenting - the alignment gets all messed up. Instead, make hAx current
 % axes
-ca = gca;
-set(hFig,'CurrentAxes',parms.hAxes);
-xlabel(sprintf('%g%s/div',dX,'s'))
-ylabel('Amplitude');
-set(hFig,'CurrentAxes',ca);
-
-axis manual
+xlabel(parms.hAxes,sprintf('%g%s/div',dX,'s'))
+ylabel(parms.hAxes,'Amplitude');
+axis(parms.hAxes,"manual")
 
 
 %%
